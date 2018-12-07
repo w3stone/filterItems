@@ -15,7 +15,7 @@
 
 <script>
     export default {
-        name: "remoteAsync",
+        name: "autocomplete",
         props:{
             value: {
                 required: true
