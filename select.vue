@@ -45,7 +45,7 @@
             /**调接口相关**/
             async: Boolean, //是否走接口
             apiName: String, //接口名
-            apiMethod: String, //Get or Post
+            method: String, //Get or Post
             /**其它**/
             ownName: String,
             selectionId: Number,
@@ -79,7 +79,7 @@
         methods:{
             init(){ //初始化
                 this.originOptions = this.options || []; //完整字典表
-                this.currentOptions = this.options.slice(0,100);
+                this.currentOptions = this.originOptions.slice(0,100);
             },
             //重置options(自动补全多选网络相关)
             remoteMethod(queryString){
@@ -89,7 +89,7 @@
                     this.currentOptions = result;
                     
                 }else{ //走网络
-                    if(queryString){
+                    if(queryString && this.apiName){
                         let params = {};
                         params.selectionId = this.selectionId;
 
@@ -98,14 +98,16 @@
                         }else if(this.ownName){
                             params[this.ownName] = queryString; //补充参数
                         }else{
-                            this.currentOptions = [];
                             return false;
                         }
 
-                        this.$dataPost(this.apiName, params, (data)=>{
-                            let result = data.options;
-                            this.currentOptions = result || [];
-                        });
+                        console.log("可调接口！");
+                        console.log(this.apiName, this.ownName, this.method)
+
+                        // this.$dataPost(this.apiName, params, (data)=>{
+                        //     let result = data.options;
+                        //     this.currentOptions = result || [];
+                        // });
                     }else{
                         this.options = [];
                     }      
