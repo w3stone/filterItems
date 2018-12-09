@@ -1,65 +1,82 @@
 <template>
     <div class="filter_checkbox">
         <el-checkbox :indeterminate="currentIndeterminate" v-model="currentCheckAll" class="filter_checkall"
-            @change="checkAllFun">全选
+            @change="checkAllFun" v-show="isCheckAll">全选
         </el-checkbox>
         <el-checkbox-group v-model="currentValue"
             @change="updateVal">
-            <el-checkbox v-for="(item, index) in selectitemlist" border class="filter_checkbox_item"
-                :key="index" :label="JSON.stringify(item)">{{item.name}}
+            <el-checkbox v-for="(item, index) in options" border class="filter_checkbox_item"
+                :key="index" :label="finalValue(item)">{{item[finalProps.label]}}
             </el-checkbox>
         </el-checkbox-group>
     </div>
 </template>
 
 <script>
+    import {defaultProps} from "./config.js"
+
     export default {
         name: "checkbox",
         props:{
             value: { required: true },
-            selectitemlist: Array, //选项列表
-            isIndeterminate: Boolean,
-            checkAll: Boolean
+            options: Array, //选项列表
+            props: Object, 
+            special: Boolean, //返回完整JSON.stringify(item)
+            isCheckAll: Boolean //是否出现全选按钮
         },
         data(){
             return {
                 currentValue: this.value,
-                currentIndeterminate: this.isIndeterminate,
-                currentCheckAll: this.checkAll
+                currentIndeterminate: false,
+                currentCheckAll: false
+            }
+        },
+        computed:{
+            finalProps(){
+                return this.props || defaultProps;
             }
         },
         methods:{
             //全选按钮点击事件
-            checkAllFun(value){
-                this.currentValue = value? this.transSearchList(this.selectitemlist): [];
+            checkAllFun(bol){
+                this.currentValue = bol? this.transOptions(this.options): [];
                 this.currentIndeterminate = false;
                 this.$emit('input', this.currentValue);
+                this.$emit('change', this.currentValue);
             },
             //全选半选不选判断
             checkAllJudge(){
-                let selectLength = this.selectitemlist.length;
+                let selectLength = this.options.length;
                 let checkedCount = this.currentValue.length;
-                //this.currentCheckAll = (checkedCount==selectitemlist.legnth);
-                this.currentCheckAll = checkedCount? true: false;
+                this.currentCheckAll = checkedCount==selectLength;
+                //this.currentCheckAll = checkedCount? true: false;
                 this.currentIndeterminate = checkedCount>0 && checkedCount<selectLength;
             },
             //转换列表
-            transSearchList(list){
-                let newArr = [];
-                list.forEach((item)=>{
-                    newArr.push( JSON.stringify(item) )
-                });
-                return newArr;
+            transOptions(list){
+                if(this.special){
+                    return list.map(o=>{return JSON.stringify(o) });
+                }else{
+                    return list.map(o=>{return o[this.finalProps.value]});
+                }
+            },
+            //返回出去的值
+            finalValue(item){ 
+                return this.special? JSON.stringify(item): item[this.finalProps.value];
             },
             //向父级传值
             updateVal(value){
+                //console.log(value);
                 this.checkAllJudge();
-                this.$emit('input', value); //触发事件，并向父级传入新值
+                //触发事件，并向父级传入新值
+                this.$emit('input', value);
+                this.$emit('change', value);
             }
         },
         watch:{
             value:{
                 handler(newVal, oldVal){
+                    //console.log(newVal, oldVal);
                     this.currentValue = newVal;
                     this.checkAllJudge();
                 }
@@ -72,11 +89,11 @@
     .filter_checkbox{
         position: relative;
 
-        .filter_checkall{
-            position: absolute;
-            right: 0;
-            top: -40px;
-        }
+        // .filter_checkall{
+        //     position: absolute;
+        //     right: 0;
+        //     top: -40px;
+        // }
 
         //重置样式
         .el-checkbox-group{

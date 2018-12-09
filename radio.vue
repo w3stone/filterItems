@@ -1,26 +1,40 @@
 <template>
     <div class="filter_radio">
         <el-radio-group v-model="currentValue">
-            <el-radio v-for="(item, index) in selectitemlist" border class="filter_radio_item"
-                :key="index" :label="JSON.stringify(item)" @change="(value)=>{updateVal(value)}">{{item.name}}
+            <el-radio v-for="(item, index) in options" border class="filter_radio_item"
+                :key="index" :label="finalValue(item)" @change="(value)=>{updateVal(value)}">{{item[finalProps.label]}}
             </el-radio>
         </el-radio-group>
     </div>
 </template>
 
 <script>
+    import {defaultProps} from "./config.js"
+
     export default {
         name: "checkbox",
         props:{
-            value: String,
-            selectitemlist: Array, //选项列表
+            value: {
+                required: true
+            },
+            options: Array, //选项列表
+            props: Object, 
+            special: Boolean //返回完整JSON.stringify(item)
         },
         data(){
             return {
                 currentValue: this.value
             }
         },
+        computed:{
+            finalProps(){
+                return this.props || defaultProps;
+            }
+        },
         methods:{
+            finalValue(item){ //返回出去的值
+                return this.special? JSON.stringify(item): item[this.finalProps.value];
+            },
             updateVal(value){
                 //触发事件，并向父级传入新值
                 this.$emit('input', value);

@@ -1,7 +1,7 @@
 var defaultProps = {
-    children: 'children',
     label: 'name',
     value: 'value',
+    children: 'children'
 }
 
 var distinct = function(arr) {
@@ -10,3 +10,7 @@ var distinct = function(arr) {
         return arr.indexOf(item, 0) === index;
     });
 };
+
+export{
+    defaultProps
+}
