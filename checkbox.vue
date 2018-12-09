@@ -1,6 +1,6 @@
 <template>
     <div class="filter_checkbox">
-        <el-checkbox :indeterminate="currentIndeterminate" v-model="currentCheckAll" class="filter_checkall"
+        <el-checkbox :indeterminate="indeterminate" v-model="checkAll" class="filter_checkall"
             @change="checkAllFun" v-show="isCheckAll">全选
         </el-checkbox>
         <el-checkbox-group v-model="currentValue"
@@ -27,8 +27,8 @@
         data(){
             return {
                 currentValue: this.value,
-                currentIndeterminate: false,
-                currentCheckAll: false
+                indeterminate: false,
+                checkAll: false
             }
         },
         computed:{
@@ -40,7 +40,7 @@
             //全选按钮点击事件
             checkAllFun(bol){
                 this.currentValue = bol? this.transOptions(this.options): [];
-                this.currentIndeterminate = false;
+                this.indeterminate = false;
                 this.$emit('input', this.currentValue);
                 this.$emit('change', this.currentValue);
             },
@@ -48,9 +48,9 @@
             checkAllJudge(){
                 let selectLength = this.options.length;
                 let checkedCount = this.currentValue.length;
-                this.currentCheckAll = checkedCount==selectLength;
-                //this.currentCheckAll = checkedCount? true: false;
-                this.currentIndeterminate = checkedCount>0 && checkedCount<selectLength;
+                this.checkAll = checkedCount==selectLength;
+                //this.checkAll = checkedCount? true: false;
+                this.indeterminate = checkedCount>0 && checkedCount<selectLength;
             },
             //转换列表
             transOptions(list){
