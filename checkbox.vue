@@ -67,7 +67,8 @@
             //向父级传值
             updateVal(value){
                 //console.log(value);
-                this.checkAllJudge();
+                if(this.isCheckAll) this.checkAllJudge();
+                
                 //触发事件，并向父级传入新值
                 this.$emit('input', value);
                 this.$emit('change', value);
@@ -78,7 +79,7 @@
                 handler(newVal, oldVal){
                     //console.log(newVal, oldVal);
                     this.currentValue = newVal;
-                    this.checkAllJudge();
+                    if(this.isCheckAll) this.checkAllJudge();
                 }
             }
         }
