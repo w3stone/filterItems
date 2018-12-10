@@ -146,6 +146,7 @@
             },
             options:{
                 handler(newVal, oldVal){
+                    //console.log(newVal);
                     this.init();
                 }
             }
