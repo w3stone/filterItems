@@ -101,13 +101,13 @@
                             return false;
                         }
 
-                        console.log("可调接口！");
-                        console.log(this.apiName, this.ownName, this.method)
+                        //console.log("可调接口！");
+                        //console.log(this.apiName, this.ownName, this.method)
 
-                        // this.$dataPost(this.apiName, params, (data)=>{
-                        //     let result = data.options;
-                        //     this.currentOptions = result || [];
-                        // });
+                        this.$dataPost(this.apiName, params, (data)=>{
+                            let result = data.options;
+                            this.currentOptions = result || [];
+                        });
                     }else{
                         this.options = [];
                     }      
