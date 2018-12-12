@@ -1,59 +1,72 @@
 <!--select自动补全(调网络接口)-->
 <template>
-    <div class="filter_select">
-        <el-select v-model="currentValue" :multiple="multiple" filterable remote reserve-keyword 
-            placeholder="请输入关键词" :remote-method="(queryString)=>{
-                remoteMethodAsync(queryString, item.id, ownName, parentName);
-            }" :collapse-tags="multiple"
-            @change="(value)=>{updateVal(value)}">
-            <el-option v-for="item in options"
-                :key="item.value" :label="item.name" :value="JSON.stringify(item)">
-            </el-option>
-        </el-select>
+    <div class="filter_autocomplete">
+        <el-autocomplete class="inline-input"
+            v-model="currentValue" :fetch-suggestions="querySearch"
+            placeholder="请输入内容" @change="updateVal">
+        </el-autocomplete>
     </div>
 </template>
 
 <script>
+    import {defaultProps} from "./config.js"
+
     export default {
         name: "autocomplete",
         props:{
             value: {
                 required: true
             },
-            selectitemlist: Array, //选项列表
+            options: Array, //选项列表
+            special: Boolean, //返回完整JSON.stringify(item)
             apiName: String, //接口名
+            async: Boolean, //是否走接口
+            //其它
+            selectionId: Number,
             ownName: String,
-            parentName: String,
-            multiple: Boolean
+            parentName: String
         },
         data(){
             return {
                 currentValue: this.value,
-                originList: this.selectitemlist,
-                options: this.selectitemlist.slice(0,100)
+                originOptions: [], //完整字典表
+                currentOptions: []
             }
         },
+        mounted(){
+            this.init();
+        },
         methods:{
+            init(){ //初始化
+                this.originOptions = this.options || []; //完整字典表
+                this.currentOptions = this.originOptions.slice(0,100);
+            },
+            querySearch(queryString, callback){
+                if(!this.async){ //走本地
+                    this.querySearchLocal(queryString, callback);
+                }else{
+
+                }
+            },
             //重置options(自动补全多选本地相关)
-            querySearchLocal(queryString, callback, list){
-                //console.log(list);
+            querySearchLocal(queryString, callback){
+                let list = this.originOptions;
                 let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list.slice(0,100);
                 result = result.map((o)=>{return {"value": o.name}});
                 callback(result);
             },
             //重置options(自动补全多选网络相关)
             querySearchAsync(queryString, callback, selectionId, ownName) {
-                if(!queryString){
+                if(!(queryString && this.apiName && this.selectionId && this.ownName)){
                     callback([]);
                     return false;
                 };
 
                 let params = {};
-                params.selectionId = selectionId;
-                params[ownName] = queryString; //补充参数
+                params.selectionId = this.selectionId;
+                params[this.ownName] = queryString; //补充参数
 
                 this.$dataPost(this.apiName, params, (data)=>{
-                    //console.log(data);
                     let result = data.selectitemlist.map((o)=>{return {"value": o.name}}); //?
                     callback(result);
                 });
@@ -66,10 +79,16 @@
             }
         },
         watch:{
-            selectitemlist:{
+            value:{
                 handler(newVal, oldVal){
-                    this.originList = newVal;
-                    this.options = newVal.slice(0,100);
+                    //console.log(newVal);
+                    this.currentValue = newVal;
+                }
+            },
+            options:{
+                handler(newVal, oldVal){
+                    //console.log(newVal);
+                    this.init();
                 }
             }
         }
