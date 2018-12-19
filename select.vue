@@ -46,6 +46,7 @@
             async: Boolean, //是否走接口
             apiName: String, //接口名
             method: String, //Get or Post
+            params: Object, //参数
             /**其它**/
             ownName: String,
             selectionId: Number,
@@ -104,12 +105,12 @@
                         //console.log("可调接口！");
                         //console.log(this.apiName, this.ownName, this.method)
 
-                        this.$dataPost(this.apiName, params, (data)=>{
-                            let result = data.options;
+                        this.$dataPostCommon(this.apiName, params, (data)=>{
+                            let result = data.selectitemlist;
                             this.currentOptions = result || [];
                         });
                     }else{
-                        this.options = [];
+                        this.currentOptions = [];
                     }      
                 }  
             },
