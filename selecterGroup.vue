@@ -3,7 +3,7 @@
     <div class="filter_select">
         <el-select v-model="currentValue" :multiple="multiple" :collapse-tags="multiple" 
             placeholder="请选择" @change="updateVal">
-            <el-option-group v-for="group in groupSelectitemlist"
+            <el-option-group v-for="group in groupOptions"
                 :key="group.name" :label="group.name" @click.native="multiSelectAll(group.name)">
                 
                 <el-option v-for="(itemc,index) in group.options"
@@ -24,9 +24,8 @@
             value: {
                 required: true
             },
-            selectitemlist: Array, //选项列表
+            options: Array, //选项列表
             multiple: Boolean, //是否多选
-            dataActionsBox: Boolean, //是否含有全选&全不选
             special: Boolean //返回完整JSON.stringify(item)
         },
         data(){
@@ -35,15 +34,14 @@
             }
         },
         computed:{
-            groupSelectitemlist(){
-                let selectitemlist = this.selectitemlist;
-                let level1NameList = Enumerable.from(selectitemlist).select(o=>o[this.finalProps.otherLabel]).distinct().toArray();
+            groupOptions(){
+                let level1NameList = Enumerable.from(this.options).select(o=>o[this.finalProps.otherLabel]).distinct().toArray();
     
                 let options = [];
                 level1NameList.forEach(itemName =>{
                     options.push({
                         "name": itemName,
-                        "options": selectitemlist.filter(o=>{return o[this.finalProps.otherLabel]==itemName})
+                        "options": this.options.filter(o=>{return o[this.finalProps.otherLabel]==itemName})
                     });
                 })
                 return options;
@@ -57,7 +55,7 @@
             multiSelectAll(value){
                 if(!this.multiple) return false; //如果是单选,退出
 
-                let level1list = this.groupSelectitemlist.filter((o)=>{return o[this.finalProps.label]==value;}); //当前一级菜单
+                let level1list = this.groupOptions.filter((o)=>{return o[this.finalProps.label]==value;}); //当前一级菜单
                 let level2list = level1list[0].options;
                 let level2ValueList = level2list.map(o=>this.finalValue(o));
 
