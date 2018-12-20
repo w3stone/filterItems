@@ -1,6 +1,7 @@
 var defaultProps = {
     label: 'name',
     value: 'value',
+    otherLabel: 'cname',
     children: 'children'
 }
 

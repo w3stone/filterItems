@@ -7,8 +7,8 @@
                 :key="group.name" :label="group.name" @click.native="multiSelectAll(group.name)">
                 
                 <el-option v-for="(itemc,index) in group.options"
-                    :key="index" :label="itemc.name"
-                    :value="JSON.stringify(itemc)">
+                    :key="index" :label="itemc[finalProps.label]"
+                    :value="finalValue(itemc)">
                 </el-option>
             </el-option-group>
         </el-select>
@@ -16,6 +16,8 @@
 </template>
 
 <script>
+    import {defaultProps} from "./config.js"
+
     export default {
         name: "selecterGroup",
         props:{
@@ -24,7 +26,8 @@
             },
             selectitemlist: Array, //选项列表
             multiple: Boolean, //是否多选
-            dataActionsBox: Boolean//是否含有全选&全不选
+            dataActionsBox: Boolean, //是否含有全选&全不选
+            special: Boolean //返回完整JSON.stringify(item)
         },
         data(){
             return {
@@ -34,45 +37,51 @@
         computed:{
             groupSelectitemlist(){
                 let selectitemlist = this.selectitemlist;
-                let level1NameList = Enumerable.from(selectitemlist).select(o=>o.cname).distinct().toArray();
+                let level1NameList = Enumerable.from(selectitemlist).select(o=>o[this.finalProps.otherLabel]).distinct().toArray();
     
                 let options = [];
                 level1NameList.forEach(itemName =>{
                     options.push({
                         "name": itemName,
-                        "options": selectitemlist.filter(o=>{return o.cname==itemName})
+                        "options": selectitemlist.filter(o=>{return o[this.finalProps.otherLabel]==itemName})
                     });
                 })
                 return options;
+            },
+            finalProps(){
+                return this.props || defaultProps;
             }
         },
         methods:{
-            //全选
-            selectAll(){
-                this.currentValue = this.finalSelectitemlist.filter((o,i)=>{
-                    return i!=0 && o.value
-                }).map(o=>{return JSON.stringify(o)});
-
-                this.updateVal(this.currentValue);
-            },
-            //全不选
-            selectNone(){
-                this.currentValue = [];
-                this.updateVal(this.currentValue);
-            },
             //多级select全选
             multiSelectAll(value){
                 if(!this.multiple) return false; //如果是单选,退出
 
-                this.currentValue = []; //清空所有
-                let level1list = this.groupSelectitemlist.filter((o)=>{return o.name==value;}); //当前一级菜单
-                let level2list = level1list[0].options; //所有当前二级菜单集合
-                if(this.currentValue.length < level2list.length){ //全选
-                    this.currentValue = level2list.map(o=>JSON.stringify(o));
-                }else{ //取消全选
-                    this.currentValue = [];
+                let level1list = this.groupSelectitemlist.filter((o)=>{return o[this.finalProps.label]==value;}); //当前一级菜单
+                let level2list = level1list[0].options;
+                let level2ValueList = level2list.map(o=>this.finalValue(o));
+
+                let num=0; //计数器
+                level2ValueList.forEach((value)=>{
+                    this.currentValue.forEach((model, index)=>{
+                        if(model==value){
+                            //debugger
+                            this.currentValue.splice(index, 1);
+                            num++;
+                            return true;
+                        }
+                    })
+                });
+
+                if(num < level2ValueList.length){ //全选
+                    this.currentValue = this.currentValue.concat(level2ValueList); //合并数组
                 }
+
                 this.updateVal(this.currentValue);
+            },
+            //返回出去的值
+            finalValue(item){ 
+                return this.special? JSON.stringify(item): item[this.finalProps.value];
             },
             //向父级传值
             updateVal(value){
