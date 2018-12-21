@@ -1,7 +1,7 @@
 <!--select封装-->
 <template>
     <div class="filter_select">
-        <el-select v-model="currentValue" :multiple="multiple" :async="async"
+        <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled"
             :filterable="remote" :remote="remote" :reserve-keyword="remote" placeholder="请输入关键词" 
             
             :remote-method="remoteMethod"
@@ -35,7 +35,8 @@
                 required: true
             },
             options: Array, //选项列表
-            props: Object, 
+            props: Object,
+            disabled:Boolean, //禁用状态
             special: Boolean, //返回完整JSON.stringify(item)
             /**多选相关**/
             multiple: Boolean, //是否多选
