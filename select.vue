@@ -6,7 +6,7 @@
             
             :remote-method="remoteMethod"
             
-            :collapse-tags="multiple"
+            :collapse-tags="multiple && collapseTags"
             
             @change="updateVal">
             
@@ -40,6 +40,7 @@
             /**多选相关**/
             multiple: Boolean, //是否多选
             dataActionsBox: Boolean, //是否含有全选&全不选
+            collapseTags: Boolean, //选中项是否折叠
             /**是否可搜索相关**/
             remote: Boolean,
             /**调接口相关**/

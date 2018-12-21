@@ -1,7 +1,7 @@
 <!--select单选-->
 <template>
     <div class="filter_select">
-        <el-select v-model="currentValue" :multiple="multiple" :collapse-tags="multiple" 
+        <el-select v-model="currentValue" :multiple="multiple" :collapse-tags="multiple && collapseTags" 
             placeholder="请选择" @change="updateVal">
             <el-option-group v-for="group in groupOptions"
                 :key="group.name" :label="group.name" @click.native="multiSelectAll(group.name)">
@@ -26,6 +26,7 @@
             },
             options: Array, //选项列表
             multiple: Boolean, //是否多选
+            collapseTags: Boolean, //选中项是否折叠
             special: Boolean //返回完整JSON.stringify(item)
         },
         data(){
