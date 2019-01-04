@@ -2,8 +2,13 @@
 <template>
     <div class="params_plus">
         <div v-for="(item, index) in inputModel" :key="index" class="clearfix">
-            <el-input class="input_item" v-model="inputModel[index].key" placeholder="请输入key"></el-input>
-            <el-input class="input_item" v-model="inputModel[index].value" placeholder="请输入value"></el-input>
+            <el-input class="input_item" v-model="inputModel[index].key" placeholder="请输入key" 
+                @change="paramsChanged">
+            </el-input>
+            
+            <el-input class="input_item" v-model="inputModel[index].value" placeholder="请输入value" 
+                @change="paramsChanged">
+            </el-input>
 
             <div class="control_box">
                 <i class="el-icon-circle-plus" @click="add(index)"></i>
@@ -32,46 +37,27 @@
                 if(this.inputModel.length>1)
                     this.inputModel.splice(index, 1); //删除当前节点
             },
-            //去除数组空元素
-            removeEmpty(list){
-                for(var i=0; i<list.length; i++){
-                    if(list[i]=="" || typeof(list[i])=="undefined"){
-                        list.splice(i,1);
-                        i--;
-                    }
-                }
-                return list;
+            paramsChanged(){
+                let params = {};
+                this.inputModel.forEach(item => {
+                    if(item.key!="") params[item.key] = item.value;
+                });
+
+                this.$emit("input", params);
+                this.$emit("change", params);
             }
         },
         watch:{
             value:{ //监测父组件值变化
+                deep: true,
                 handler(newVal, oldVal){
-                    //console.log(newVal);
+                    //console.log(newVal, oldVal);
+                    this.inputModel = [];
                     for(var key in newVal){
                         this.inputModel.push({"key":key, "value":newVal[key]});
                     }
                 }
-            },
-            inputModel:{ //监测自己变化，向父组件传值
-                //immediate: true,
-                deep: true,
-                handler(newVal, oldVal){
-                    let finalArray = JSON.parse(JSON.stringify(newVal));
-                    finalArray = this.removeEmpty(finalArray);
-                    
-                    let params = {};
-                    
-                    finalArray.forEach(item => {
-                        //console.log(item);
-                        //console.log(item.key, item.value);
-                        if(item.key!="") params[item.key] = item.value;
-                    });
-
-
-                    this.$emit("input", params);
-                    this.$emit("change", params);
-                }
-            },
+            }
         }
 
 	}
@@ -96,6 +82,10 @@
                 color: #333;
                 cursor: pointer;
                 //user-select: none;
+
+                &:hover{
+                    color: #666;
+                }
             }
         }
         

@@ -2,11 +2,9 @@
 <template>
     <div class="mixInput">
         <div v-for="(item, index) in inputModel" :key="index">
-            <el-autocomplete
-                class="inline-input"
+            <el-autocomplete class="inline-input" placeholder="请输入内容"
                 v-model="inputModel[index]"
                 :fetch-suggestions="querySearch"
-                placeholder="请输入内容"
                 @select="selected">
             </el-autocomplete>
             <div class="control_box">
@@ -45,10 +43,17 @@
                 // 调用 callback 返回建议列表的数据
                 callback(results);
             },
-            selected(data){
+            //元素被选中事件
+            selected(data){ 
                 //console.log(data);
                 this.$emit("selected", data);
             },
+            // stringChanged(data){
+            //     let finalArray = JSON.parse(JSON.stringify(this.inputModel));
+            //     finalArray = this.removeEmpty(finalArray);
+            //     this.$emit("input", finalArray.join(","));
+            //     this.$emit("change", finalArray.join(","));
+            // },
             //去除数组空元素
             removeEmpty(list){
                 for(var i=0; i<list.length; i++){
@@ -75,7 +80,7 @@
                     this.$emit("input", finalArray.join(","));
                     this.$emit("change", finalArray.join(","));
                 }
-            },
+            }
         }
 
 	}
@@ -100,6 +105,10 @@
                 color: #333;
                 cursor: pointer;
                 //user-select: none;
+
+                &:hover{
+                    color: #666;
+                }
             }
         }
         
