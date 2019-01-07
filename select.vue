@@ -89,6 +89,7 @@
             remoteMethod(queryString){
                 if(!this.async){ //走本地
                     let list = this.originOptions;
+                    //console.log(queryString, list);
                     let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list.slice(0,100);
                     this.currentOptions = result;
                     
