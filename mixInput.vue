@@ -8,7 +8,7 @@
                 @select="selected">
             </el-autocomplete>
             <div class="control_box">
-                <i class="el-icon-circle-plus" @click="add(index)"></i>
+                <i class="el-icon-circle-plus" v-show="inputModel[index]" @click="add(index)"></i>
                 <i class="el-icon-remove" v-show="inputModel.length>1" @click="del(index)"></i>
             </div>
         </div>
@@ -19,7 +19,7 @@
     export default {
         name:'mixInput',
         props:{
-            value: {type: String, required: true},
+            value: {type: Array, required: true},
             options: {type: Array}, //字典表
             xd: {type: Boolean}
         },
@@ -47,38 +47,24 @@
             selected(data){ 
                 //console.log(data);
                 this.$emit("selected", data);
-            },
-            // stringChanged(data){
-            //     let finalArray = JSON.parse(JSON.stringify(this.inputModel));
-            //     finalArray = this.removeEmpty(finalArray);
-            //     this.$emit("input", finalArray.join(","));
-            //     this.$emit("change", finalArray.join(","));
-            // },
-            //去除数组空元素
-            removeEmpty(list){
-                for(var i=0; i<list.length; i++){
-                    if(list[i]=="" || typeof(list[i])=="undefined"){
-                        list.splice(i,1);
-                        i--;
-                    }
-                }
-                return list;
             }
         },
         watch:{
             value:{ //监测父组件值变化
                 handler(newVal, oldVal){
                     //console.log(newVal);
-                    this.inputModel = newVal? newVal.split(","): [""];
+                    this.inputModel = newVal.length>0? newVal: [""];
                 }
             },
             inputModel:{ //监测自己变化，向父组件传值
                 //immediate: true,
                 handler(newVal, oldVal){
-                    let finalArray = JSON.parse(JSON.stringify(newVal));
-                    finalArray = this.removeEmpty(finalArray);
-                    this.$emit("input", finalArray.join(","));
-                    this.$emit("change", finalArray.join(","));
+                    //console.log(newVal, oldVal);
+                    if(newVal[newVal.length-1]=="")
+                        newVal = newVal.pop(); //删除数组最后一位
+
+                    this.$emit("input", newVal);
+                    this.$emit("change", newVal);
                 }
             }
         }
@@ -96,6 +82,7 @@
         }
         .control_box{
             float: left;
+            width: 50px;
             line-height: 40px;
             padding-left: 10px;
             user-select: none;
