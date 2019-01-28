@@ -165,7 +165,7 @@
             width: 50%;
             box-sizing: border-box;
             background-color: transparent;
-            height: 30px;
+            height: 100%;
             line-height: 30px;
             border: 1px solid #ccc;
             border-radius: 2px;
