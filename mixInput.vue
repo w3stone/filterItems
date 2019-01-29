@@ -52,16 +52,15 @@
         watch:{
             value:{ //监测父组件值变化
                 handler(newVal, oldVal){
-                    //console.log(newVal);
+                    //console.log(newVal, oldVal);
                     this.inputModel = newVal.length>0? newVal: [""];
                 }
             },
             inputModel:{ //监测自己变化，向父组件传值
-                //immediate: true,
                 handler(newVal, oldVal){
                     //console.log(newVal, oldVal);
-                    if(newVal[newVal.length-1]=="")
-                        newVal = newVal.pop(); //删除数组最后一位
+                    // if(newVal[newVal.length-1]=="")
+                    //     newVal = newVal.pop(); //删除数组最后一位
 
                     this.$emit("input", newVal);
                     this.$emit("change", newVal);
