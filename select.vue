@@ -83,14 +83,14 @@
         methods:{
             init(){ //初始化
                 this.originOptions = this.options || []; //完整字典表
-                this.currentOptions = this.originOptions.slice(0,100);
+                this.currentOptions = this.originOptions;
             },
             //重置options(自动补全多选网络相关)
             remoteMethod(queryString){
                 if(!this.async){ //走本地
                     let list = this.originOptions;
                     //console.log(queryString, list);
-                    let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list.slice(0,100);
+                    let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list;
                     this.currentOptions = result;
                     
                 }else{ //走网络
