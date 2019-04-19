@@ -160,6 +160,10 @@
 </script>
 
 <style lang="scss" type="text/css">
+    .filter_select{
+        display: inline-block;
+    }
+
     .el-select-dropdown.is-multiple{
         .select_btn{
             width: 50%;
