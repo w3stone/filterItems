@@ -5,7 +5,8 @@
         </el-checkbox>
         <el-checkbox-group v-model="currentValue"
             @change="updateVal">
-            <el-checkbox v-for="(item, index) in options" border class="filter_checkbox_item"
+            <el-checkbox v-for="(item, index) in options" :border="border" class="filter_checkbox_item"
+                :class="{'checkbox_border':border}"
                 :key="index" :label="finalValue(item)">{{item[finalProps.label]}}
             </el-checkbox>
         </el-checkbox-group>
@@ -22,7 +23,8 @@
             options: Array, //选项列表
             props: Object, 
             special: Boolean, //返回完整JSON.stringify(item)
-            isCheckAll: Boolean //是否出现全选按钮
+            isCheckAll: Boolean, //是否出现全选按钮
+            border: Boolean
         },
         data(){
             return {
@@ -104,7 +106,7 @@
             margin: 4px !important;
             background-color: #fff; 
         }
-        .filter_checkbox_item .el-checkbox__inner{
+        .checkbox_border .el-checkbox__inner{
             display: none;
         } 
     }
