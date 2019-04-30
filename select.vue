@@ -90,7 +90,7 @@
                 if(!this.async){ //走本地
                     let list = this.originOptions;
                     //console.log(queryString, list);
-                    let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list;
+                    let result = queryString? list.filter(o => o.name.indexOf(queryString)!=-1): list;
                     this.currentOptions = result;
                     
                 }else{ //走网络
@@ -120,7 +120,7 @@
             },
             //全选事件
             selectAll(){
-                this.currentValue = this.currentOptions.filter((o,i)=>{
+                this.currentValue = this.currentOptions.filter((o,i) => {
                     return i!=0 && ( o[this.finalProps.value] || o[this.finalProps.value]==0 )
                 }).map(o=>{return this.finalValue(o)});
 

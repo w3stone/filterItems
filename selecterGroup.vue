@@ -42,7 +42,7 @@
                 level1NameList.forEach(itemName =>{
                     options.push({
                         "name": itemName,
-                        "options": this.options.filter(o=>{return o[this.finalProps.otherLabel]==itemName})
+                        "options": this.options.filter(o => o[this.finalProps.otherLabel]==itemName)
                     });
                 })
                 return options;
@@ -56,7 +56,7 @@
             multiSelectAll(value){
                 if(!this.multiple) return false; //如果是单选,退出
 
-                let level1list = this.groupOptions.filter((o)=>{return o[this.finalProps.label]==value;}); //当前一级菜单
+                let level1list = this.groupOptions.filter(o => o[this.finalProps.label]==value); //当前一级菜单
                 let level2list = level1list[0].options;
                 let level2ValueList = level2list.map(o=>this.finalValue(o));
 

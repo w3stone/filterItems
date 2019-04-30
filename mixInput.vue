@@ -39,7 +39,7 @@
             //搜索方法
             querySearch(queryString, callback) {
                 let options = this.options || [];
-                let results = queryString ? options.filter(o=>{ return o.value.indexOf(queryString)!=-1 }): options;
+                let results = queryString ? options.filter(o => o.value.indexOf(queryString)!=-1): options;
                 // 调用 callback 返回建议列表的数据
                 callback(results);
             },

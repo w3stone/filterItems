@@ -51,7 +51,7 @@
             //重置options(自动补全多选本地相关)
             querySearchLocal(queryString, callback){
                 let list = this.originOptions;
-                let result = queryString? list.filter((o)=>{ return o.name.indexOf(queryString)!=-1 }): list.slice(0,100);
+                let result = queryString? list.filter(o => o.name.indexOf(queryString)!=-1): list.slice(0,100);
                 result = result.map((o)=>{return {"value": o.name}});
                 callback(result);
             },
