@@ -10,17 +10,15 @@
             :collapse-tags="multiple && collapseTags"
             
             @change="updateVal">
+
+            <el-option label="" value="" :disabled="true" v-if="multiple && dataActionsBox && originOptions.length<=100">
+                <button @click="selectAll" class="select_btn" style="float:left;">全选</button>
+                <button @click="selectNone" class="select_btn" style="float:right;border-left:none;">全不选</button>
+            </el-option>
             
-            <el-option v-for="(item,index) in finalOption"
+            <el-option v-for="(item,index) in currentOptions"
                 :key="index" :disabled="item.disabled"
                 :label="item[finalProps.label]" :value="finalValue(item)">
-
-                <button @click="selectAll" class="select_btn" style="float:left;" 
-                    v-if="index==0 && multiple && dataActionsBox">全选</button>
-
-                <button @click="selectNone" class="select_btn" style="float:right;border-left:none;" 
-                    v-if="index==0 && multiple && dataActionsBox">全不选</button>
-
             </el-option>
         </el-select>
     </div>
@@ -65,16 +63,6 @@
         computed:{
             finalProps(){
                 return this.props || defaultProps;
-            },
-            finalOption(){
-                //如果有dataActionsBox属性，则前插一项
-                if(this.multiple && this.dataActionsBox && this.currentOptions.length>0){
-                    //let extraItem = 
-                    this.currentOptions.unshift({[this.finalProps.value]:'', [this.finalProps.label]:'', disabled:true});
-                    return this.currentOptions;
-                }else{
-                    return this.currentOptions;
-                }
             }
         },
         mounted(){
@@ -82,15 +70,24 @@
         },
         methods:{
             init(){ //初始化
-                this.originOptions = this.options || []; //完整字典表
-                this.currentOptions = this.originOptions;
+                this.originOptions = JSON.parse(JSON.stringify(this.options)) || []; //完整字典表
+                this.currentOptions = (this.options.length>100 && this.remote)? this.options.slice(0,50): this.options;
             },
             //重置options(自动补全多选网络相关)
             remoteMethod(queryString){
                 if(!this.async){ //走本地
                     let list = this.originOptions;
                     //console.log(queryString, list);
-                    let result = queryString? list.filter(o => o.name.indexOf(queryString)!=-1): list;
+                    let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
+
+                    //补全已经选中的项(?暂未解决非special情况)
+                    this.currentValue.forEach(item => {
+                        if(this.special){
+                            item = JSON.parse(item);
+                            if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                                result.push(item);
+                        }
+                    });
                     this.currentOptions = result;
                     
                 }else{ //走网络
@@ -120,8 +117,8 @@
             },
             //全选事件
             selectAll(){
-                this.currentValue = this.currentOptions.filter((o,i) => {
-                    return i!=0 && ( o[this.finalProps.value] || o[this.finalProps.value]==0 )
+                this.currentValue = this.originOptions.filter(o => { //从原始数据中选择
+                    return o[this.finalProps.value] || o[this.finalProps.value]==0
                 }).map(o=>{return this.finalValue(o)});
 
                 this.updateVal(this.currentValue);
