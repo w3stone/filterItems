@@ -79,15 +79,15 @@
                     let list = this.originOptions;
                     //console.log(queryString, list);
                     let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
-
+                    
                     //补全已经选中的项(?暂未解决非special情况)
-                    this.currentValue.forEach(item => {
-                        if(this.special){
+                    if(this.special && this.multiple){
+                        currentValue.forEach(item => {
                             item = JSON.parse(item);
                             if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
                                 result.push(item);
-                        }
-                    });
+                        });
+                    }
                     this.currentOptions = result;
                     
                 }else{ //走网络
