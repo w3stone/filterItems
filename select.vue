@@ -72,6 +72,23 @@
             init(){ //初始化
                 this.originOptions = JSON.parse(JSON.stringify(this.options)) || []; //完整字典表
                 this.currentOptions = (this.options.length>100 && this.remote)? this.options.slice(0,50): this.options;
+
+                //判断值是否在currentOptions里，如果没有则插入(?暂未解决非special情况)
+                if(this.special && this.currentValue){
+                    if(this.multiple){ //多选
+                        this.currentValue.forEach(item => {
+                            item = JSON.parse(item);
+                            if(!this.currentOptions.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                                this.currentOptions.push(item);
+                        });
+                    }else{ //单选
+                        if(this.currentValue){
+                            let item = JSON.parse(this.currentValue);
+                            if(!this.currentOptions.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                                this.currentOptions.push(item);
+                        }
+                    }
+                }
             },
             //重置options(自动补全多选网络相关)
             remoteMethod(queryString){
@@ -81,21 +98,21 @@
                     let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
                     
                     //补全已经选中的项(?暂未解决非special情况)
-                    if(this.special){
-                        if(this.multiple){ //多选
-                            this.currentValue.forEach(item => {
-                                item = JSON.parse(item);
-                                if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                                    result.push(item);
-                            });
-                        }else{ //单选
-                            if(this.currentValue){
-                                let item = JSON.parse(this.currentValue);
-                                if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                                    result.push(item);
-                            }
-                        }
-                    }
+                    // if(this.special){
+                    //     if(this.multiple){ //多选
+                    //         this.currentValue.forEach(item => {
+                    //             item = JSON.parse(item);
+                    //             if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                    //                 result.push(item);
+                    //         });
+                    //     }else{ //单选
+                    //         if(this.currentValue){
+                    //             let item = JSON.parse(this.currentValue);
+                    //             if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                    //                 result.push(item);
+                    //         }
+                    //     }
+                    // }
                     this.currentOptions = result;
                     
                 }else{ //走网络
@@ -150,7 +167,7 @@
         watch:{
             value:{
                 handler(newVal, oldVal){
-                    //console.log(newVal);
+                    //console.log(newVal, oldVal);
                     this.currentValue = newVal;
                 }
             },
