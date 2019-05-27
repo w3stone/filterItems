@@ -81,12 +81,20 @@
                     let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
                     
                     //补全已经选中的项(?暂未解决非special情况)
-                    if(this.special && this.multiple){
-                        currentValue.forEach(item => {
-                            item = JSON.parse(item);
-                            if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                                result.push(item);
-                        });
+                    if(this.special){
+                        if(this.multiple){
+                            this.currentValue.forEach(item => {
+                                item = JSON.parse(item);
+                                if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                                    result.push(item);
+                            });
+                        }else{
+                            if(this.currentValue){
+                                let item = JSON.parse(this.currentValue);
+                                if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
+                                    result.push(item);
+                            }
+                        }
                     }
                     this.currentOptions = result;
                     
