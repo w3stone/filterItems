@@ -82,13 +82,13 @@
                     
                     //补全已经选中的项(?暂未解决非special情况)
                     if(this.special){
-                        if(this.multiple){
+                        if(this.multiple){ //多选
                             this.currentValue.forEach(item => {
                                 item = JSON.parse(item);
                                 if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
                                     result.push(item);
                             });
-                        }else{
+                        }else{ //单选
                             if(this.currentValue){
                                 let item = JSON.parse(this.currentValue);
                                 if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
