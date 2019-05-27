@@ -173,7 +173,7 @@
             },
             options:{
                 handler(newVal, oldVal){
-                    //console.log(newVal);
+                    //console.log(newVal, oldVal);
                     this.init();
                 }
             }
