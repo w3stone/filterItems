@@ -3,7 +3,7 @@
     <div class="filter_select">
         <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled"
             :filterable="remote" :remote="remote" :reserve-keyword="remote" 
-            :placeholder="remote?'请输入关键词':'请选择'" 
+            :placeholder="!placeholder? remote?'请输入关键词':'请选择': placeholder"
             
             :remote-method="remoteMethod"
             
@@ -35,7 +35,8 @@
             },
             options: Array, //选项列表
             props: Object,
-            disabled:Boolean, //禁用状态
+            disabled: Boolean, //禁用状态
+            placeholder: String,
             special: Boolean, //返回完整JSON.stringify(item)
             /**多选相关**/
             multiple: Boolean, //是否多选
