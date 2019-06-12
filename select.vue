@@ -68,26 +68,42 @@
         },
         mounted(){
             this.init();
+            this.checkValue();
         },
         methods:{
             init(){ //初始化
+                //console.log("初始化");
                 this.originOptions = JSON.parse(JSON.stringify(this.options)) || []; //完整字典表
                 this.currentOptions = (this.options.length>100 && this.remote)? this.options.slice(0,50): this.options;
+            },
+            //判断值是否在currentOptions里，如果没有则插入
+            checkValue(){
+                let check = (value) => {
+                    let item = null;
+                    if(this.special){
+                        let item = JSON.parse(value);
+                        if(this.currentOptions.filter(o => o[this.finalProps.value]==item[this.finalProps.value]).length>0) return true;
+                        this.currentOptions.push(item);
 
-                //判断值是否在currentOptions里，如果没有则插入(?暂未解决非special情况)
-                if(this.special && this.currentValue){
+                    }else{
+                        // console.log(value);
+                        // console.log(this.currentOptions);
+                        if(this.currentOptions.filter(o => o[this.finalProps.value]==value).length>0) return true;
+
+                        let temp = this.originOptions.filter(o => o[this.finalProps.value]==value);
+                        this.currentOptions = this.currentOptions.concat(temp); //合并
+                    }
+                };
+
+                //执行
+                if(this.currentValue){
                     if(this.multiple){ //多选
-                        this.currentValue.forEach(item => {
-                            item = JSON.parse(item);
-                            if(!this.currentOptions.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                                this.currentOptions.push(item);
+                        this.currentValue.forEach(value => {
+                            check(value);
                         });
                     }else{ //单选
-                        if(this.currentValue){
-                            let item = JSON.parse(this.currentValue);
-                            if(!this.currentOptions.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                                this.currentOptions.push(item);
-                        }
+                        let value = this.currentValue;
+                        check(value);
                     }
                 }
             },
@@ -97,23 +113,6 @@
                     let list = this.originOptions;
                     //console.log(queryString, list);
                     let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
-                    
-                    //补全已经选中的项(?暂未解决非special情况)
-                    // if(this.special){
-                    //     if(this.multiple){ //多选
-                    //         this.currentValue.forEach(item => {
-                    //             item = JSON.parse(item);
-                    //             if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                    //                 result.push(item);
-                    //         });
-                    //     }else{ //单选
-                    //         if(this.currentValue){
-                    //             let item = JSON.parse(this.currentValue);
-                    //             if(!result.filter(o => o[this.finalProps.label]==item[this.finalProps.label]).length>0)
-                    //                 result.push(item);
-                    //         }
-                    //     }
-                    // }
                     this.currentOptions = result;
                     
                 }else{ //走网络
@@ -170,12 +169,14 @@
                 handler(newVal, oldVal){
                     //console.log(newVal, oldVal);
                     this.currentValue = newVal;
+                    this.checkValue();
                 }
             },
             options:{
                 handler(newVal, oldVal){
                     //console.log(newVal, oldVal);
                     this.init();
+                    this.checkValue();
                 }
             }
         }
