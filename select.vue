@@ -2,7 +2,7 @@
 <template>
     <div class="filter_select">
         <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled"
-            :filterable="remote" :remote="remote" :reserve-keyword="remote" 
+            :filterable="remote" :remote="remote" :reserve-keyword="remote" clearable
             :placeholder="!placeholder? remote?'请输入关键词':'请选择': placeholder"
             
             :remote-method="remoteMethod"
