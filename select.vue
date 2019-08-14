@@ -1,8 +1,8 @@
 <!--select封装-->
 <template>
     <div class="filter_select">
-        <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled"
-            :filterable="remote" :remote="remote" :reserve-keyword="remote" clearable
+        <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled || optionsLoading"
+            :filterable="remote" :remote="remote" :reserve-keyword="remote" :clearable="!multiple"
             :placeholder="!placeholder? remote?'请输入关键词':'请选择': placeholder"
             
             :remote-method="remoteMethod"
@@ -21,6 +21,10 @@
                 :label="item[finalProps.label]" :value="finalValue(item)">
             </el-option>
         </el-select>
+        
+        <div class="options_loading" v-show="optionsLoading">
+            <i class="el-icon-loading loading_icon"></i>
+        </div>
     </div>
 </template>
 
@@ -58,7 +62,8 @@
             return {
                 currentValue: this.value,
                 originOptions: [], //完整字典表
-                currentOptions: []
+                currentOptions: [],
+                optionsLoading: false
             }
         },
         computed:{
@@ -185,7 +190,29 @@
 
 <style lang="scss" type="text/css">
     .filter_select{
+        position: relative;
         display: inline-block;
+        .options_loading{
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            text-align: center;
+            line-height: 48px;
+            .loading_icon{
+                font-size: 18px;
+            }
+        }
+        //多选标签
+        .el-select__tags{
+            max-width: initial !important;
+            .el-tag{
+                max-width: calc(100% - 80px);
+                overflow-x: hidden;
+                text-overflow: ellipsis;
+            }
+        }
     }
 
     .el-select-dropdown.is-multiple{
