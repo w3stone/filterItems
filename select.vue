@@ -2,19 +2,21 @@
 <template>
     <div class="filter_select">
         <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled || optionsLoading"
-            :filterable="remote" :remote="remote" :reserve-keyword="remote" :clearable="!multiple"
+            :filterable="remote" :remote="remote" :reserve-keyword="true" :clearable="!multiple"
             :placeholder="!placeholder? remote?'请输入关键词':'请选择': placeholder"
             
             :remote-method="remoteMethod"
-            
+
             :collapse-tags="multiple && collapseTags"
             
             @change="updateVal">
 
-            <el-option label="" value="" :disabled="true" v-if="multiple && dataActionsBox && originOptions.length<=100">
-                <button @click="selectAll" class="select_btn" style="float:left;">全选</button>
-                <button @click="selectNone" class="select_btn" style="float:right;border-left:none;">全不选</button>
-            </el-option>
+            <template v-if="multiple && dataActionsBox && originOptions.length>0 && originOptions.length<=100">
+                <el-option label="" value="" :disabled="true">
+                    <button @click="selectAll" class="select_btn" style="float:left;">全选</button>
+                    <button @click="selectNone" class="select_btn" style="float:right;border-left:none;">全不选</button>
+                </el-option>
+            </template>
             
             <el-option v-for="(item,index) in currentOptions"
                 :key="index" :disabled="item.disabled"
@@ -118,7 +120,13 @@
                     let list = this.originOptions;
                     //console.log(queryString, list);
                     let result = queryString? list.filter(o => o[this.finalProps.label].indexOf(queryString)!=-1).slice(0,50): list.slice(0,50);
-                    this.currentOptions = result;
+                    
+                    this.currentOptions = [];
+                    let timer = setTimeout(()=>{
+                        this.currentOptions = result;
+                        this.checkValue();
+                        clearTimeout(timer);
+                    }, 200);
                     
                 }else{ //走网络
                     if(queryString && this.apiName){
@@ -139,9 +147,11 @@
                         this.$dataPostCommon(this.apiName, params, (data)=>{
                             let result = data.selectitemlist;
                             this.currentOptions = result || [];
+                            this.checkValue();
                         });
                     }else{
                         this.currentOptions = [];
+                        this.checkValue();
                     }      
                 }  
             },
@@ -163,7 +173,7 @@
                 return this.special? JSON.stringify(item): item[this.finalProps.value];
             },
             //向父级传值
-            updateVal(value){
+            updateVal(value, b, c){
                 //触发事件，并向父级传入新值
                 this.$emit('input', value);
                 this.$emit('change', value);
