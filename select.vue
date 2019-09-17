@@ -4,12 +4,10 @@
         <el-select v-model="currentValue" :multiple="multiple" :async="async" :disabled="disabled || optionsLoading"
             :filterable="remote" :remote="remote" :reserve-keyword="true" :clearable="!multiple"
             :placeholder="!placeholder? remote?'请输入关键词':'请选择': placeholder"
-            
             :remote-method="remoteMethod"
-
             :collapse-tags="multiple && collapseTags"
-            
-            @change="updateVal">
+            :loading="optionsLoading"
+            @change="updateVal" @focus="focused">
 
             <template v-if="multiple && dataActionsBox && originOptions.length>0 && originOptions.length<=100">
                 <el-option label="" value="" :disabled="true">
@@ -24,9 +22,9 @@
             </el-option>
         </el-select>
         
-        <div class="options_loading" v-show="optionsLoading">
+        <!-- <div class="options_loading" v-show="optionsLoading">
             <i class="el-icon-loading loading_icon"></i>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -177,6 +175,10 @@
                 //触发事件，并向父级传入新值
                 this.$emit('input', value);
                 this.$emit('change', value);
+            },
+            //获得焦点事件
+            focused(event){
+                this.$emit("focus", event);
             }
         },
         watch:{
